@@ -1,7 +1,4 @@
-"use client"
-
-import { useParams, notFound } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, Github, ExternalLink } from 'lucide-react';
@@ -145,16 +142,14 @@ const projects: Project[] = [
   },
 ];
 
-export default function ProjectPage() {
-  const { id } = useParams();
-  const [project, setProject] = useState<Project | null>(null);
-  
-  useEffect(() => {
-    const foundProject = projects.find(p => p.id === id);
-    if (foundProject) {
-      setProject(foundProject);
-    }
-  }, [id]);
+export async function generateStaticParams() {
+  return projects.map((project) => ({
+    id: project.id,
+  }));
+}
+
+export default function ProjectPage({ params }: { params: { id: string } }) {
+  const project = projects.find(p => p.id === params.id);
   
   if (!project) {
     return notFound();
